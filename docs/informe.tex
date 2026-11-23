@@ -1,0 +1,83 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{graphicx}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\newcommand{\evidencia}[3]{%
+  \textbf{#1. #2}\par
+  \includegraphics[width=0.89\linewidth,height=3.8cm,keepaspectratio]{img/#1.png}\par
+  #3\par\medskip
+}
+\begin{document}
+\section*{AforoSeguro de práctica}
+Práctica asistida con IA. La evidencia procede de procesos ejecutados en Linux.
+Las imágenes reproducen las transcripciones de consola conservadas en
+\texttt{docs/img/}.
+
+\begin{tabular}{@{}p{\linewidth}@{}}
+\evidencia{E0}{Conexión local}{El coordinador atendió en
+\texttt{127.0.0.1} y recibió latidos de las tres puertas. La prueba
+comprueba el uso de loopback en este entorno de práctica.}\strut\\
+\evidencia{E1}{Operación normal}{Se aceptó una entrada en cada puerta y
+una salida en P2. Las tres puertas observaron 2 de 10. La salida
+previa con el contador en cero fue rechazada.}\strut\\
+\evidencia{E2}{Límite y autenticación}{La undécima entrada fue rechazada.
+El coordinador registró también el rechazo del token incorrecto y del
+token ausente.}\strut
+\end{tabular}
+
+\newpage
+\section*{Carga y fallos}
+\begin{tabular}{@{}p{\linewidth}@{}}
+\evidencia{E3}{Carga concurrente}{Con aforo 10, el modo normal permitió 10
+entradas y rechazó 20. El modo inseguro permitió 30 y rechazó 0.
+Las ocupaciones finales fueron 10 y 30, sin errores de transporte.}\strut\\
+\evidencia{E4}{Caída y recuperación de P3}{P3 pasó a caída aproximadamente
+seis segundos después de detener el proceso. El primer latido del proceso
+reiniciado la devolvió a activa.}\strut\\
+\evidencia{E5}{Coordinador detenido}{P1 informó que la entrada no se
+había confirmado. Las puertas dependen de la respuesta del coordinador
+para autorizar una entrada.}\strut
+\end{tabular}
+
+\newpage
+\section*{Orden y análisis}
+\begin{tabular}{@{}p{\linewidth}@{}}
+\evidencia{E6}{Orden total}{La bitácora combinada contiene 1045 eventos. Las
+solicitudes identificadas en la imagen se enviaron en las marcas 21 y 24.
+El coordinador (P0) las recibió en 22 y 25, respectivamente. El orden
+por Lamport mantiene ambos envíos antes de su recepción.}\strut
+\end{tabular}
+
+\textbf{1. Concurrencia.}
+En E3, las solicitudes superaron la comprobación antes de que se aplicaran
+los incrementos pendientes tras la pausa. El modo normal mantiene la
+comprobación y el incremento en una sección crítica. Las operaciones
+compiten por el mismo bloqueo y esperan su turno cuando hay contención.
+
+\textbf{2. Consistencia y disponibilidad.}
+En E5, P1 dejó de confirmar entradas. Si una partición produjera la misma
+pérdida de comunicación, decidir localmente podría romper el límite global.
+La decisión prioriza la consistencia del aforo ante esa pérdida de
+comunicación. El público debe esperar y la administración conserva el
+control central de las autorizaciones. Detener el coordinador en E5
+demuestra la pérdida de servicio, mientras que CAP describe el compromiso
+durante una partición.
+
+\textbf{3. Coordinador único.}
+Se podría replicar el estado con un líder elegido por mayoría y confirmar
+cada operación tras replicar su posición en el registro. Las réplicas
+tendrían que acordar el orden de entradas y salidas para evitar que dos
+líderes concedan el último cupo. El prototipo guarda el contador en
+memoria y lo pierde cuando se reinicia el coordinador.
+
+\textbf{4. Latencia.}
+La latencia de red puede ser significativa y variable. Los latidos
+cada dos segundos dan margen para retrasos antes del umbral de seis
+segundos. Con siete segundos de demora en una dirección, un latido
+puede llegar tarde y la puerta puede aparecer caída temporalmente
+aunque siga ejecutándose. También vencería la espera de respuesta del
+cliente. Si luego se reciben latidos válidos, el coordinador vuelve a
+marcar la puerta activa.
+\end{document}
