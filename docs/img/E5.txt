@@ -1,7 +1,0 @@
-AforoSeguro de práctica | E5
-Usuario: agent | Equipo: 14596a5e310a
-Fecha: 2026-11-23T14:16:24+00:00
-Sistema: Linux
-
-Coordinador detenido con las tres puertas activas.
-P1 ENTRAR: operación no confirmada por el coordinador

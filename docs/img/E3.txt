@@ -1,7 +1,0 @@
-AforoSeguro de práctica | E3
-Usuario: agent | Equipo: 14596a5e310a
-Fecha: 2026-11-23T14:16:24+00:00
-Sistema: Linux
-
-Normal:   {"permitidas": 10, "rechazadas": 20, "errores": 0, "dentro": 10}
-Inseguro: {"permitidas": 30, "rechazadas": 0, "errores": 0, "dentro": 30}
