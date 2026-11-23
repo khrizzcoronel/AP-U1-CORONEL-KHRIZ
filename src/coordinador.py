@@ -1,6 +1,7 @@
 import hmac
 import socketserver
 from threading import Lock
+from time import sleep
 
 from .protocolo import Config, argumentos, escribir, leer
 
@@ -10,13 +11,23 @@ class Coordinador(socketserver.ThreadingTCPServer):
     daemon_threads = True
     request_queue_size = 64
 
-    def __init__(self, config):
+    def __init__(self, config, inseguro):
+        self.inseguro = inseguro
         self.config = config
         self.dentro = 0
         self.bloqueo = Lock()
         super().__init__(config.direccion, Conexion)
 
     def operar(self, tipo):
+        if self.inseguro and tipo == "ENTRAR":
+            with self.bloqueo:
+                motivo = self.impedimento(tipo)
+            if not motivo:
+                sleep(0.05)
+                with self.bloqueo:
+                    self.actualizar(tipo)
+            return motivo, self.dentro
+
         with self.bloqueo:
             motivo = self.impedimento(tipo)
             if not motivo:
@@ -65,9 +76,11 @@ class Conexion(socketserver.StreamRequestHandler):
 
 
 def main():
-    args = argumentos().parse_args()
+    parser = argumentos()
+    parser.add_argument("--inseguro", action="store_true")
+    args = parser.parse_args()
     config = Config.leer(args.config)
-    with Coordinador(config) as servidor:
+    with Coordinador(config, args.inseguro) as servidor:
         print(f"Coordinador en {servidor.server_address}", flush=True)
         servidor.serve_forever()
 
