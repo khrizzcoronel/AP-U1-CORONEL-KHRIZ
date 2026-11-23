@@ -51,13 +51,22 @@ def leer(archivo):
     return valor
 
 
-def solicitar(config, puerta, tipo, *, token=None):
+def marca(mensaje):
+    valor = mensaje.get("lamport")
+    if type(valor) is not int or valor < 0:
+        raise ValueError("Marca de Lamport inválida")
+    return valor
+
+
+def solicitar(config, puerta, tipo, bitacora, *, token=None):
     mensaje = dict(tipo=tipo, token=config.token if token is None else token,
-                   puerta=puerta, lamport=0, solicitud=uuid4().hex)
+                   puerta=puerta, solicitud=uuid4().hex)
     with socket.create_connection(config.direccion, timeout=1.5) as conexion:
+        mensaje["lamport"] = bitacora.evento("ENVIO", f"{tipo} {mensaje['solicitud']}")
         conexion.sendall(escribir(mensaje))
         with conexion.makefile("rb") as entrada:
             respuesta = leer(entrada)
     if respuesta is None or respuesta.get("solicitud") != mensaje["solicitud"]:
         raise ValueError("Respuesta ausente o no correlacionada")
+    bitacora.evento("RECEPCION", f"RESPUESTA {mensaje['solicitud']}", marca(respuesta))
     return respuesta
