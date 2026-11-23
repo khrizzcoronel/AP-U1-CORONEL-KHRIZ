@@ -1,0 +1,9 @@
+AforoSeguro de práctica | E2
+Usuario: agent | Equipo: 14596a5e310a
+Fecha: 2026-11-23T14:16:17+00:00
+Sistema: Linux
+
+ENTRAR: RECHAZADA aforo completo 10/10 | P1=ACTIVA P2=ACTIVA P3=ACTIVA
+Token incorrecto: RECHAZADA (token inválido)
+Token ausente: RECHAZADA (token inválido)
+Ambos rechazos constan en coordinador.log.

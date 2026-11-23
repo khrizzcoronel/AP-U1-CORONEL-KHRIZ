@@ -1,0 +1,8 @@
+AforoSeguro de práctica | E6
+Usuario: agent | Equipo: 14596a5e310a
+Fecha: 2026-11-23T14:16:24+00:00
+Sistema: Linux
+
+1045 eventos en logs/orden_total.log
+ENTRAR 0591e82689cd46c9a144dc5d55e0bfb9: envío 21 < recepción 22 (P0)
+ENTRAR 63ce80298ebb4134896aec9178b26046: envío 24 < recepción 25 (P0)
